@@ -1,11 +1,25 @@
 package main
 
 import (
+	"database/sql"
 	"net/http"
 	"text/template"
+
+	_ "github.com/lib/pq"
 )
 
+func conectDataBase() *sql.DB {
+	conectionString := "user=postgres dbname=loja password=Senha@123 host=localhost sslmode=disable"
+	db, err := sql.Open("postgres", conectionString)
+
+	if err != nil {
+		panic(err.Error())
+	}
+	return db
+}
+
 type Product struct {
+	Id          int
 	Name        string
 	Description string
 	Price       float64
@@ -20,12 +34,36 @@ func main() {
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
-	products := []Product{
-		{"T-shirt", "Very pretty", 39, 5},
-		{"Tenis", "Confortavel", 89, 3},
-		{"Head Phone", "very good", 59, 2},
-		{"New Product", "Nice", 1.99, 1},
+	db := conectDataBase()
+
+	allProducts, err := db.Query("SELECT * FROM products")
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	p := Product{}
+	products := []Product{}
+
+	for allProducts.Next() {
+		var id, amount int
+		var name, description string
+		var price float64
+
+		err = allProducts.Scan(&id, &name, &description, &price, &amount)
+		if err != nil {
+			panic(err.Error())
+		}
+
+		p.Id = id
+		p.Name = name
+		p.Description = description
+		p.Price = price
+		p.Amount = amount
+
+		products = append(products, p)
 	}
 
 	templates.ExecuteTemplate(w, "Index", products)
+	defer db.Close()
 }
