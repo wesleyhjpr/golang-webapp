@@ -8,7 +8,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func conectDataBase() *sql.DB {
+func connectDataBase() *sql.DB {
 	conectionString := "user=postgres dbname=loja password=Senha@123 host=localhost sslmode=disable"
 	db, err := sql.Open("postgres", conectionString)
 
@@ -34,7 +34,7 @@ func main() {
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
-	db := conectDataBase()
+	db := connectDataBase()
 
 	allProducts, err := db.Query("SELECT * FROM products")
 
