@@ -1,4 +1,4 @@
-module github.com/wesleyhjpr/golang-webapp
+module golang-webapp
 
 go 1.17
 

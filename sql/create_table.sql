@@ -3,5 +3,5 @@ create table products (
 	name varchar,
 	description varchar,
 	price decimal,
-	amount integer
+	quantity integer
 )
